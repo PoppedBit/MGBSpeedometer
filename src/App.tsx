@@ -1,7 +1,10 @@
 import { Settings } from '@mui/icons-material';
 import { AppBar, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, IconButton, Switch, Typography } from '@mui/material';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@emotion/react';
+
 
 function App() {
 
@@ -22,6 +25,16 @@ function App() {
     }
   }, [timeoutExpired]);
 
+  const theme = useMemo(
+    () =>
+        createTheme({
+            palette: {
+                mode: isDarkMode ? 'dark' : 'light',
+            },
+        }),
+    [isDarkMode]
+);
+
   const updateSpeed = (position: GeolocationPosition) => {
     const { speed } = position.coords;
     if(speed !== null){
@@ -29,8 +42,7 @@ function App() {
       const speedMph = Math.floor(speed * 2.23694);
       setSpeed(speedMph);
     }else{
-      setMessage("Speed not available.");
-      // setSpeed(Math.floor(Math.random() * 100));
+      setSpeed(0);
     }
   }
 
@@ -44,8 +56,16 @@ function App() {
   const size = (window.innerWidth > window.innerHeight ? window.innerHeight: window.innerWidth) -40;
 
   return (
-    <>
-      <Container style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <ThemeProvider theme={theme}>
+      <Container 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          backgroundColor: theme => theme.palette.background.default,
+        }}>
         <AppBar>
           <IconButton
             onClick={() => setIsSettingsOpen(true)}
@@ -73,7 +93,10 @@ function App() {
           <Typography variant='h5'>{message}</Typography>
           {timeoutExpired && <Button
             variant='contained'
-            onClick={() => setTimeoutExpired(false)}
+            onClick={() => {
+              setTimeoutExpired(false);
+              setMessage('');
+            }}
           >
             Retry
           </Button>}
@@ -81,10 +104,11 @@ function App() {
       </Container>
       <Dialog
         open={isSettingsOpen}
+        fullWidth
       >
         <DialogTitle>Settings</DialogTitle>
         <DialogContent>
-          <FormLabel component='legend'>Theme</FormLabel>
+          <FormLabel component='legend'>Dark Theme</FormLabel>
           <Switch
             checked={isDarkMode}
             onChange={() => setIsDarkMode(!isDarkMode)}
@@ -97,7 +121,7 @@ function App() {
           >Close</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </ThemeProvider>
   )
 }
 
