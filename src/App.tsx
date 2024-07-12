@@ -39,6 +39,9 @@ const App = () => {
     () =>
       createTheme({
         palette: {
+          primary: {
+            main: '#ff1744',
+          },
           mode: isDarkMode ? 'dark' : 'light'
         }
       }),
@@ -129,5 +132,3 @@ const App = () => {
 };
 
 export default App;
-
-//Working on a new to me 1977 MGB that is missing a gas cap. Purchased a non locking one on Ebay, and unfortunately it doesn't fit. I notice the fuel tank opening has this pattern, like maybe I should have got one with a locking mechanism. Can anyone confirm, or link me to one that will fit my car?
