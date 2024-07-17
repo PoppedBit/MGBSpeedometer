@@ -22,7 +22,7 @@ const App = () => {
   const [speed, setSpeed] = useState(0);
   const [message, setMessage] = useState('');
   const [timeoutExpired, setTimeoutExpired] = useState(false);
-
+  const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -34,6 +34,28 @@ const App = () => {
       });
     }
   }, [timeoutExpired]);
+
+  useEffect(() => {
+    const requestWakeLock = async () => {
+      try {
+        const lock = await navigator.wakeLock.request('screen');
+        setWakeLock(lock);
+        console.log('Wake lock is active');
+      } catch (err) {
+        
+      }
+    };
+
+    requestWakeLock();
+
+    return () => {
+      if (wakeLock !== null) {
+        wakeLock.release().then(() => {
+          setWakeLock(null);        
+        });
+      }
+    };
+  }, [wakeLock]);
 
   const theme = useMemo(
     () =>
